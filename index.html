@@ -1217,7 +1217,7 @@ async function doSave(f){
   try{
     const ins=await supa('POST','films',toRow(f));
     const saved=Array.isArray(ins)?ins[0]:ins;
-    films.push(toLocal(saved||{...f,id:'tmp-'+Date.now()}));
+    films.unshift(toLocal(saved||{...f,id:'tmp-'+Date.now()}));
     closeModal();renderAll();
     showToast(`✅ "${f.titre}" ajouté !`);
   }catch(e){showToast('Erreur : '+e.message.slice(0,80));}
@@ -1377,7 +1377,7 @@ async function confirmBuy(){
       annee:w.annee,real:w.real,synopsis:w.synopsis,poster:w.poster,note:null,support,vu};
     const ins=await supa('POST','films',toRow(f));
     const saved=Array.isArray(ins)?ins[0]:ins;
-    films.push(toLocal(saved||{...f,id:'tmp-'+Date.now()}));
+    films.unshift(toLocal(saved||{...f,id:'tmp-'+Date.now()}));
     await supa('DELETE',`wishlist?id=eq.${encodeURIComponent(w.id)}`);
     wishlist=wishlist.filter(x=>x.id!==w.id);
     closeBuyModal();renderAll();renderWish();
