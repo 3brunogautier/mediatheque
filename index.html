@@ -725,8 +725,12 @@ function toRow(f){
 }
 
 async function loadFilms(){
-  try{films=((await supa('GET','films?select=*&order=titre.asc'))||[]).map(toLocal);}
-  catch(e){showToast('Erreur : '+e.message.slice(0,60));films=[];}
+  try{
+    films=((await supa('GET','films?select=*&order=created_at.desc.nullslast'))||[]).map(toLocal);
+  }catch(e){
+    try{films=((await supa('GET','films?select=*&order=titre.asc'))||[]).map(toLocal);}
+    catch(e2){showToast('Erreur : '+e2.message.slice(0,60));films=[];}
+  }
   renderAll();
 }
 
@@ -760,7 +764,7 @@ function renderAccueil(){
 
   // Hero bg avec les affiches récentes
   const bg=document.getElementById('heroBg');
-  const recents=[...films].slice(-12).filter(f=>f.poster);
+  const recents=[...films].slice(0,12).filter(f=>f.poster);
   bg.innerHTML=recents.map(f=>`<img class="hero-poster" src="${f.poster}" alt="" loading="lazy">`).join('');
 
   // Stat row
@@ -783,7 +787,7 @@ function renderAccueil(){
     </div>`;
 
   // Récents
-  const recFilms=[...films].reverse().slice(0,12);
+  const recFilms=films.slice(0,12);
   const rs=document.getElementById('recentScroll');
   if(recFilms.length){
     document.getElementById('sectionRecent').classList.remove('hidden');
