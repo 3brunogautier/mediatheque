@@ -183,6 +183,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .support-card:active{border-color:var(--gold);}
 .support-logo{height:44px;display:flex;align-items:center;}
 .support-logo svg,.support-logo img{height:100%;max-width:260px;width:auto;}
+.support-logo-big{height:66px;margin-bottom:2px;}
 .support-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
 .support-count{font-size:13px;font-weight:300;color:var(--text3);letter-spacing:.5px;}
 
@@ -801,13 +802,13 @@ function renderAccueil(){
     {key:'4K UHD',   logo:logo4K()},
     {key:'Blu-ray',  logo:logoBluray()},
     {key:'DVD',      logo:logoDVD()},
-    {key:'Edition Collector', logo:logoCollector()}
+    {key:'Edition Collector', logo:logoCollector(), noLabel:true, big:true}
   ];
   document.getElementById('supportGrid').innerHTML=supports.map(s=>{
     const n=films.filter(f=>f.support===s.key).length;
     return `<div class="support-card" onclick="filterBySupport('${s.key}')">
-      <div class="support-logo">${s.logo}</div>
-      <div><div class="support-name">${s.key}</div>
+      <div class="support-logo${s.big?' support-logo-big':''}">${s.logo}</div>
+      <div>${s.noLabel?'':`<div class="support-name">${s.key}</div>`}
       <div class="support-count">${n} film${n>1?'s':''}</div></div>
     </div>`;
   }).join('');
