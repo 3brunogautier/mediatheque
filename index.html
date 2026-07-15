@@ -975,21 +975,20 @@ function renderStats(){
     <div class="big-stat"><div class="bsv">${avg}</div><div class="bsl">Note moyenne</div></div>
     <div class="big-stat"><div class="bsv">${oldest}</div><div class="bsl">Film le + ancien</div></div>`;
 
-  // Genre chart
+  // Genre chart — échelle calée sur l'objectif de collection (450 films), pas sur le max courant
+  const COLLECTION_GOAL=450;
   const genres=[...new Set(films.flatMap(f=>f.genres||[]))].map(g=>({g,n:films.filter(f=>(f.genres||[]).includes(g)).length})).sort((a,b)=>b.n-a.n).slice(0,8);
-  const maxG=genres[0]?.n||1;
   document.getElementById('genreChart').innerHTML=genres.map(({g,n})=>`<div class="bar-item">
     <div class="bar-label">${esc(g)}</div>
-    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxG*100)}%"></div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,Math.round(n/COLLECTION_GOAL*100))}%"></div></div>
     <div class="bar-val">${n}</div>
   </div>`).join('');
 
-  // Support chart
+  // Support chart — même échelle fixe
   const sups=['4K UHD','Blu-ray','DVD','Edition Collector'].map(s=>({s,n:films.filter(f=>f.support===s).length})).filter(x=>x.n>0);
-  const maxS=Math.max(...sups.map(x=>x.n),1);
   document.getElementById('supportChart').innerHTML=sups.map(({s,n})=>`<div class="bar-item">
     <div class="bar-label">${s}</div>
-    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxS*100)}%"></div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,Math.round(n/COLLECTION_GOAL*100))}%"></div></div>
     <div class="bar-val">${n}</div>
   </div>`).join('');
 }
