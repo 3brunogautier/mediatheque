@@ -760,10 +760,15 @@ function renderAccueil(){
   document.getElementById('heroCount').textContent=t;
   document.getElementById('heroSub').innerHTML=`films &nbsp;·&nbsp; <span>${nonVus} non vus</span>`;
 
-  // Hero bg avec les affiches récentes
+  // Hero bg avec les affiches, mélangées et répétées pour remplir toute la largeur
   const bg=document.getElementById('heroBg');
-  const recents=[...films].slice(0,12).filter(f=>f.poster);
-  bg.innerHTML=recents.map(f=>`<img class="hero-poster" src="${f.poster}" alt="" loading="lazy">`).join('');
+  const posters=films.filter(f=>f.poster).map(f=>f.poster);
+  const shuffled=[...posters].sort(()=>Math.random()-0.5);
+  let bgList=[];
+  while(bgList.length<40 && shuffled.length){
+    bgList=bgList.concat(shuffled);
+  }
+  bg.innerHTML=bgList.map(p=>`<img class="hero-poster" src="${p}" alt="" loading="lazy">`).join('');
 
   // Récents
   const recFilms=films.slice(0,12);
