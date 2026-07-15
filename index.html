@@ -215,22 +215,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 20px;}
 .cat-card{
   position:relative;border-radius:14px;overflow:hidden;
-  min-height:150px;cursor:pointer;background:var(--bg3);
+  min-height:170px;cursor:pointer;background:var(--bg3);
   display:flex;flex-direction:column;justify-content:flex-end;
-  transition:transform .15s;
+  transition:transform .15s;box-shadow:0 4px 16px rgba(0,0,0,.35);
 }
 .cat-card:active{transform:scale(.97);}
-.cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45;transition:opacity .2s;}
-.cat-card:hover .cat-bg{opacity:.55;}
-.cat-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.05) 0%,rgba(0,0,0,.82) 100%);}
-.cat-icon{position:relative;z-index:2;padding:14px 14px 0;font-size:22px;}
-.cat-info{position:relative;z-index:2;padding:8px 14px 10px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;}
-.cat-name{font-size:17px;font-weight:700;color:#fff;line-height:1.2;}
-.cat-count{font-size:12px;font-weight:300;color:rgba(255,255,255,.55);margin-top:3px;letter-spacing:.3px;}
+.cat-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;transition:opacity .25s,transform .4s;transform:scale(1.02);}
+.cat-card:hover .cat-bg{opacity:.7;transform:scale(1.08);}
+.cat-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.15) 0%,rgba(0,0,0,.35) 45%,rgba(0,0,0,.92) 100%);}
+.cat-info{position:relative;z-index:2;padding:14px 16px 12px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;}
+.cat-name{font-size:18px;font-weight:800;color:#fff;line-height:1.2;letter-spacing:.2px;}
+.cat-count{font-size:12px;font-weight:300;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.3px;}
 .cat-bar{height:3px;width:100%;position:relative;z-index:2;flex-shrink:0;}
 @media(min-width:768px){
   .cat-grid{grid-template-columns:repeat(4,1fr);padding:0 40px;}
-  .cat-card{min-height:180px;}
+  .cat-card{min-height:200px;}
 }
 @media(min-width:1200px){
   .cat-grid{grid-template-columns:repeat(5,1fr);}
@@ -886,9 +885,9 @@ const GENRE_META = {
   'Drame':           { icon:'🎭',  color:'#6366f1', tmdbId:18   },
   'Fantastique':     { icon:'🧙',  color:'#22c55e', tmdbId:14   },
   'Horreur':         { icon:'💀',  color:'#dc2626', tmdbId:27   },
-  'Musical':         { icon:'🎵',  color:'#ec4899', tmdbId:10402},
+  'Musique':         { icon:'🎵',  color:'#ec4899', tmdbId:10402},
   'Romance':         { icon:'❤️',  color:'#f43f5e', tmdbId:10749},
-  'Science-fiction': { icon:'🚀',  color:'#3b82f6', tmdbId:878  },
+  'Science-Fiction': { icon:'🚀',  color:'#3b82f6', tmdbId:878  },
   'Thriller':        { icon:'😰',  color:'#a855f7', tmdbId:53   },
   'Western':         { icon:'🤠',  color:'#d97706', tmdbId:37   },
   'Guerre':          { icon:'🎖️',  color:'#78716c', tmdbId:10752},
@@ -928,10 +927,9 @@ async function renderCats() {
   // Afficher d'abord les cartes sans image (instantané)
   g.innerHTML = genres.map(gen => {
     const n = films.filter(f => (f.genres||[]).includes(gen)).length;
-    const m = GENRE_META[gen] || { icon:'🎬', color:'#dc2626' };
+    const m = GENRE_META[gen] || { color:'#dc2626' };
     return `<div class="cat-card" id="cat-${esc(gen)}" onclick="filterByCat('${esc(gen)}')">
       <div class="cat-overlay"></div>
-      <div class="cat-icon">${m.icon}</div>
       <div class="cat-info">
         <div class="cat-name">${esc(gen)}</div>
         <div class="cat-count">${n} film${n>1?'s':''}</div>
