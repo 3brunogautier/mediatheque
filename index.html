@@ -697,7 +697,7 @@ function logo4K(){
   return `<img src="logo-4k.png" alt="4K UHD">`;
 }
 function logoBluray(){    return `<img src="logo-bluray.png" alt="Blu-ray">`; }
-function logoDVD(){       return logoBadge(iconDisc('#dc2626'), 'DVD',      '#dc2626'); }
+function logoDVD(){       return `<img src="logo-dvd.png" alt="DVD">`; }
 function logoCollector(){ return `<img src="logo-collector.png" alt="Editions Collector">`; }
 
 /* ── Supabase ── */
@@ -801,7 +801,7 @@ function renderAccueil(){
   const supports=[
     {key:'4K UHD',   logo:logo4K(), noLabel:true, big:true},
     {key:'Blu-ray',  logo:logoBluray(), noLabel:true, big:true},
-    {key:'DVD',      logo:logoDVD()},
+    {key:'DVD',      logo:logoDVD(), noLabel:true, big:true},
     {key:'Edition Collector', logo:logoCollector(), noLabel:true, big:true}
   ];
   document.getElementById('supportGrid').innerHTML=supports.map(s=>{
