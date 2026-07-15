@@ -422,9 +422,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="stat-row" id="statRow"></div>
-
   <!-- Ajoutés récemment -->
   <div class="section" id="sectionRecent">
     <div class="section-header">
@@ -767,25 +764,6 @@ function renderAccueil(){
   const bg=document.getElementById('heroBg');
   const recents=[...films].slice(0,12).filter(f=>f.poster);
   bg.innerHTML=recents.map(f=>`<img class="hero-poster" src="${f.poster}" alt="" loading="lazy">`).join('');
-
-  // Stat row
-  document.getElementById('statRow').innerHTML=`
-    <div class="stat-card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20"/></svg>
-      <div class="val">${t}</div><div class="lbl">Films</div>
-    </div>
-    <div class="stat-card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      <div class="val">${vus}</div><div class="lbl">Vus</div>
-    </div>
-    <div class="stat-card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      <div class="val">${nonVus}</div><div class="lbl">Non vus</div>
-    </div>
-    <div class="stat-card">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <div class="val">${avgNote}</div><div class="lbl">Moy.</div>
-    </div>`;
 
   // Récents
   const recFilms=films.slice(0,12);
