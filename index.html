@@ -1053,12 +1053,14 @@ function onAddSearch(){
 function showSugg(results){
   const box=document.getElementById('suggList');
   if(!results.length){box.innerHTML=`<div class="sug-msg">Aucun résultat</div>`;return;}
-  box.innerHTML=results.slice(0,8).map(m=>{
+  const sorted=[...results].sort((a,b)=>(b.popularity||0)-(a.popularity||0));
+  box.innerHTML=sorted.slice(0,8).map(m=>{
     const yr=m.release_date?m.release_date.slice(0,4):'';
+    const note=m.vote_count>0?` · ⭐ ${m.vote_average.toFixed(1)}`:' · ⚠️ peu connu';
     const img=m.poster_path?`<img src="${IMG_SM}${m.poster_path}" loading="lazy" alt="">`:`<div class="sph">🎬</div>`;
     return `<div class="sug-row" onclick="pickMovie(${m.id})">
       ${img}
-      <div><div class="st">${esc(m.title)}</div><div class="ss">${yr}${m.original_title&&m.original_title!==m.title?' · '+esc(m.original_title):''}</div></div>
+      <div><div class="st">${esc(m.title)}</div><div class="ss">${yr}${m.original_title&&m.original_title!==m.title?' · '+esc(m.original_title):''}${note}</div></div>
     </div>`;
   }).join('');
 }
@@ -1262,12 +1264,14 @@ function onWishSearch(){
 function showWishSugg(results){
   const box=document.getElementById('wishSuggList');
   if(!results.length){box.innerHTML=`<div class="sug-msg">Aucun résultat</div>`;return;}
-  box.innerHTML=results.slice(0,8).map(m=>{
+  const sorted=[...results].sort((a,b)=>(b.popularity||0)-(a.popularity||0));
+  box.innerHTML=sorted.slice(0,8).map(m=>{
     const yr=m.release_date?m.release_date.slice(0,4):'';
+    const note=m.vote_count>0?` · ⭐ ${m.vote_average.toFixed(1)}`:' · ⚠️ peu connu';
     const img=m.poster_path?`<img src="${IMG_SM}${m.poster_path}" loading="lazy" alt="">`:`<div class="sph">🎬</div>`;
     return `<div class="sug-row" onclick="pickWishMovie(${m.id})">
       ${img}
-      <div><div class="st">${esc(m.title)}</div><div class="ss">${yr}${m.original_title&&m.original_title!==m.title?' · '+esc(m.original_title):''}</div></div>
+      <div><div class="st">${esc(m.title)}</div><div class="ss">${yr}${m.original_title&&m.original_title!==m.title?' · '+esc(m.original_title):''}${note}</div></div>
     </div>`;
   }).join('');
 }
