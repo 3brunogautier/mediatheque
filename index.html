@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Ma Médiathèque</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 <!-- PWA / Ajout à l'écran d'accueil -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0a0a">
@@ -25,7 +29,7 @@
   --blue:#3b82f6;--radius:12px;
   --nav-h:72px;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden;}
 
 /* ── APP SHELL ── */
 #app{display:flex;flex-direction:column;min-height:100vh;max-width:430px;margin:0 auto;position:relative;padding-top:env(safe-area-inset-top);}
@@ -144,7 +148,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 
 /* ── HEADER ── */
 .page-header{padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between;}
-.page-header h1{font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:500;letter-spacing:0.5px;color:var(--text);}
+.page-header h1{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:300;letter-spacing:0.3px;color:var(--text);}
 .header-actions{display:flex;gap:10px;}
 .icon-btn{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);}
 .icon-btn:active{opacity:.7;}
