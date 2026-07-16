@@ -921,9 +921,9 @@ function renderCats() {
     const list = films.filter(f => (f.genres||[]).includes(gen));
     const n = list.length;
     const m = GENRE_META[gen] || { color:'#dc2626' };
-    // Affiche d'un des films possédés dans ce genre (le mieux noté en priorité)
-    const withPoster = list.filter(f => f.poster).sort((a,b) => (b.note||0)-(a.note||0));
-    const pick = withPoster[0];
+    // Affiche aléatoire parmi les films possédés dans ce genre (plus de variété qu'un choix fixe)
+    const withPoster = list.filter(f => f.poster);
+    const pick = withPoster.length ? withPoster[Math.floor(Math.random()*withPoster.length)] : null;
     return `<div class="cat-card" onclick="filterByCat('${esc(gen)}')">
       ${pick ? `<img class="cat-bg" src="${pick.poster}" alt="" loading="lazy">` : ''}
       <div class="cat-overlay"></div>
