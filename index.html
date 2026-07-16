@@ -907,26 +907,8 @@ const GENRE_META = {
   'Familial':        { icon:'👨‍👩‍👧',  color:'#84cc16', tmdbId:10751},
 };
 
-const genreBackdropCache = {};
 
-async function fetchGenreBackdrop(genreName) {
-  if (genreBackdropCache[genreName]) return genreBackdropCache[genreName];
-  const m = GENRE_META[genreName];
-  if (!m || !m.tmdbId) return null;
-  try {
-    const r = await fetch(`${TMDB}/discover/movie?api_key=${TMDB_KEY}&language=fr-FR&with_genres=${m.tmdbId}&sort_by=popularity.desc&page=1`);
-    const d = await r.json();
-    const movie = (d.results || []).find(x => x.backdrop_path);
-    if (movie) {
-      const url = `https://image.tmdb.org/t/p/w780${movie.backdrop_path}`;
-      genreBackdropCache[genreName] = url;
-      return url;
-    }
-  } catch(e) {}
-  return null;
-}
-
-async function renderCats() {
+function renderCats() {
   const genres = [...new Set(films.flatMap(f => f.genres || []))].sort((a,b) => a.localeCompare(b,'fr'));
   const g = document.getElementById('catGrid');
 
@@ -935,11 +917,15 @@ async function renderCats() {
     return;
   }
 
-  // Afficher d'abord les cartes sans image (instantané)
   g.innerHTML = genres.map(gen => {
-    const n = films.filter(f => (f.genres||[]).includes(gen)).length;
+    const list = films.filter(f => (f.genres||[]).includes(gen));
+    const n = list.length;
     const m = GENRE_META[gen] || { color:'#dc2626' };
-    return `<div class="cat-card" id="cat-${esc(gen)}" onclick="filterByCat('${esc(gen)}')">
+    // Affiche d'un des films possédés dans ce genre (le mieux noté en priorité)
+    const withPoster = list.filter(f => f.poster).sort((a,b) => (b.note||0)-(a.note||0));
+    const pick = withPoster[0];
+    return `<div class="cat-card" onclick="filterByCat('${esc(gen)}')">
+      ${pick ? `<img class="cat-bg" src="${pick.poster}" alt="" loading="lazy">` : ''}
       <div class="cat-overlay"></div>
       <div class="cat-info">
         <div class="cat-name">${esc(gen)}</div>
@@ -948,20 +934,6 @@ async function renderCats() {
       <div class="cat-bar" style="background:${m.color}"></div>
     </div>`;
   }).join('');
-
-  // Charger les backdrops TMDB en parallèle et les injecter
-  await Promise.all(genres.map(async gen => {
-    const url = await fetchGenreBackdrop(gen);
-    if (!url) return;
-    const card = document.getElementById(`cat-${gen}`);
-    if (!card) return;
-    const img = document.createElement('img');
-    img.className = 'cat-bg';
-    img.src = url;
-    img.alt = '';
-    img.loading = 'lazy';
-    card.insertBefore(img, card.firstChild);
-  }));
 }
 
 function filterByCat(genre){
