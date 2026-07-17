@@ -398,6 +398,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
 /* ── CINÉROULETTE : filtres ── */
 .cr-label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+.cr-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
 
 /* ── CINÉROULETTE : roue / résultat ── */
 .cr-spin-modal{background:var(--bg2);border-radius:20px;padding:24px;width:100%;max-width:380px;text-align:center;}
@@ -690,7 +691,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
     <h2 style="margin-bottom:16px">Filtres CinéRoulette</h2>
 
     <label class="cr-label">Support</label>
-    <div class="filters-row" style="padding:0 0 14px;margin-bottom:0" id="crSupportChips">
+    <div class="cr-chip-row" id="crSupportChips">
       <div class="filter-chip active" data-filter="support" data-value="" onclick="crSelectChip(this)">Tous</div>
       <div class="filter-chip" data-filter="support" data-value="4K UHD" onclick="crSelectChip(this)">4K UHD</div>
       <div class="filter-chip" data-filter="support" data-value="Blu-ray" onclick="crSelectChip(this)">Blu-ray</div>
@@ -699,10 +700,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
     </div>
 
     <label class="cr-label">Genre</label>
-    <div class="filters-row" style="padding:0 0 14px;margin-bottom:0" id="crGenreChips"></div>
+    <div class="cr-chip-row" id="crGenreChips"></div>
 
     <label class="cr-label">Statut</label>
-    <div class="filters-row" style="padding:0 0 20px;margin-bottom:0" id="crVuChips">
+    <div class="cr-chip-row" id="crVuChips">
       <div class="filter-chip active" data-filter="vu" data-value="" onclick="crSelectChip(this)">Tous</div>
       <div class="filter-chip" data-filter="vu" data-value="nonvu" onclick="crSelectChip(this)">Seulement non vus</div>
     </div>
