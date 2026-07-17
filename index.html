@@ -166,6 +166,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 .hero-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:13px;font-weight:600;padding:9px 18px;border-radius:30px;cursor:pointer;letter-spacing:.3px;transition:all .2s;}
 .hero-btn:active{background:var(--gold);color:#000;}
 
+/* ── CINÉROULETTE CARD ── */
+.cr-card{position:relative;margin:12px 20px 20px;border-radius:18px;overflow:hidden;min-height:150px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;}
+.cr-bg{position:absolute;inset:0;display:flex;gap:2px;overflow:hidden;}
+.cr-bg img{flex-shrink:0;width:70px;object-fit:cover;opacity:.4;}
+.cr-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,10,.97) 0%,rgba(10,10,10,.85) 45%,rgba(10,10,10,.35) 100%);}
+.cr-content{position:relative;z-index:2;padding:20px 22px;}
+.cr-title{font-size:19px;font-weight:700;letter-spacing:1.5px;color:#fff;margin-bottom:4px;}
+.cr-sub{font-size:12.5px;color:var(--text2);margin-bottom:14px;}
+.cr-btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#000;border:none;font-size:13px;font-weight:700;padding:10px 18px;border-radius:30px;cursor:pointer;letter-spacing:.3px;}
+.cr-btn:active{opacity:.85;}
+
 /* ── STAT CARDS ── */
 .stat-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 20px 24px;}
 .stat-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 8px;text-align:center;}
@@ -384,6 +395,28 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 .dup-overlay.hidden{display:none;}
 .dup-modal{background:var(--bg2);border:0.5px solid #333;border-radius:18px;padding:24px;max-width:360px;width:100%;text-align:center;}
 .dup-icon{font-size:48px;margin-bottom:12px;}
+
+/* ── CINÉROULETTE : filtres ── */
+.cr-label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+
+/* ── CINÉROULETTE : roue / résultat ── */
+.cr-spin-modal{background:var(--bg2);border-radius:20px;padding:24px;width:100%;max-width:380px;text-align:center;}
+.cr-reel-viewport{position:relative;height:340px;overflow:hidden;border-radius:14px;background:var(--bg3);margin-bottom:16px;}
+.cr-reel-track{position:absolute;top:105px;left:0;right:0;}
+.cr-reel-item{height:130px;display:flex;align-items:center;justify-content:center;padding:5px 0;}
+.cr-reel-item img{max-height:120px;max-width:80%;object-fit:cover;border-radius:8px;opacity:.4;transform:scale(.88);transition:opacity .2s,transform .2s;}
+.cr-reel-item.cr-target img{opacity:1;transform:scale(1);}
+.cr-reel-highlight{position:absolute;top:105px;left:10px;right:10px;height:130px;border:2px solid var(--gold);border-radius:12px;pointer-events:none;box-shadow:0 0 24px rgba(255,255,255,.15);}
+.cr-reel-fade{position:absolute;left:0;right:0;height:90px;pointer-events:none;}
+.cr-reel-fade-top{top:0;background:linear-gradient(to bottom,var(--bg3) 10%,transparent);}
+.cr-reel-fade-bottom{bottom:0;background:linear-gradient(to top,var(--bg3) 10%,transparent);}
+.cr-spin-label{font-size:13px;color:var(--text2);letter-spacing:.3px;}
+.cr-res-poster{width:140px;height:210px;object-fit:cover;border-radius:12px;margin:0 auto 16px;display:block;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.cr-res-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
+.cr-res-meta{font-size:13px;color:var(--text2);margin-bottom:6px;}
+.cr-res-note{font-size:14px;color:var(--gold);margin-bottom:12px;}
+.cr-res-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;}
+.cr-res-actions{display:flex;gap:10px;margin-bottom:10px;}
 .dup-modal h3{font-size:17px;font-weight:700;margin-bottom:8px;}
 .dup-modal p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px;}
 .dup-film{display:flex;align-items:center;gap:12px;background:var(--bg3);border-radius:10px;padding:10px;margin:12px 0;text-align:left;}
@@ -433,6 +466,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
       <div class="hero-count" id="heroCount">0</div>
       <div class="hero-sub" id="heroSub">films</div>
       <button class="hero-btn" onclick="navigate('films')">Voir ma collection &rarr;</button>
+    </div>
+  </div>
+
+  <!-- CinéRoulette -->
+  <div class="cr-card" onclick="openRouletteFilters()">
+    <div class="cr-bg" id="crBg"></div>
+    <div class="cr-overlay"></div>
+    <div class="cr-content">
+      <div class="cr-title">CINÉROULETTE</div>
+      <div class="cr-sub">Vous ne savez pas quoi regarder ?</div>
+      <button class="cr-btn" onclick="event.stopPropagation();openRouletteFilters()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
+        Lancer la roue
+      </button>
     </div>
   </div>
 
@@ -636,6 +683,68 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
   </div>
 </div>
 
+<!-- ══ CINÉROULETTE : Filtres ══ -->
+<div class="wish-overlay hidden" id="crFilterOverlay" onclick="if(event.target===this)closeRouletteFilters()">
+  <div class="wish-modal">
+    <div class="modal-handle"></div>
+    <h2 style="margin-bottom:16px">Filtres CinéRoulette</h2>
+
+    <label class="cr-label">Support</label>
+    <div class="filters-row" style="padding:0 0 14px;margin-bottom:0" id="crSupportChips">
+      <div class="filter-chip active" data-filter="support" data-value="" onclick="crSelectChip(this)">Tous</div>
+      <div class="filter-chip" data-filter="support" data-value="4K UHD" onclick="crSelectChip(this)">4K UHD</div>
+      <div class="filter-chip" data-filter="support" data-value="Blu-ray" onclick="crSelectChip(this)">Blu-ray</div>
+      <div class="filter-chip" data-filter="support" data-value="DVD" onclick="crSelectChip(this)">DVD</div>
+      <div class="filter-chip" data-filter="support" data-value="Edition Collector" onclick="crSelectChip(this)">Collector</div>
+    </div>
+
+    <label class="cr-label">Genre</label>
+    <div class="filters-row" style="padding:0 0 14px;margin-bottom:0" id="crGenreChips"></div>
+
+    <label class="cr-label">Statut</label>
+    <div class="filters-row" style="padding:0 0 20px;margin-bottom:0" id="crVuChips">
+      <div class="filter-chip active" data-filter="vu" data-value="" onclick="crSelectChip(this)">Tous</div>
+      <div class="filter-chip" data-filter="vu" data-value="nonvu" onclick="crSelectChip(this)">Seulement non vus</div>
+    </div>
+
+    <button class="btn-gold" onclick="launchRoulette()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="vertical-align:-3px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
+      Lancer la roue
+    </button>
+    <button class="btn-ghost" onclick="closeRouletteFilters()">Annuler</button>
+  </div>
+</div>
+
+<!-- ══ CINÉROULETTE : Roue / Résultat ══ -->
+<div class="overlay hidden" id="crSpinOverlay">
+  <div class="cr-spin-modal">
+    <!-- Vue "roue en cours" -->
+    <div id="crSpinView">
+      <div class="cr-reel-viewport">
+        <div class="cr-reel-track" id="crReelTrack"></div>
+        <div class="cr-reel-highlight"></div>
+        <div class="cr-reel-fade cr-reel-fade-top"></div>
+        <div class="cr-reel-fade cr-reel-fade-bottom"></div>
+      </div>
+      <p class="cr-spin-label" id="crSpinLabel">Lancement de la roue…</p>
+    </div>
+
+    <!-- Vue résultat -->
+    <div id="crResultView" class="hidden">
+      <img class="cr-res-poster" id="crResPoster" src="" alt="">
+      <div class="cr-res-title" id="crResTitle"></div>
+      <div class="cr-res-meta" id="crResMeta"></div>
+      <div class="cr-res-note" id="crResNote"></div>
+      <div class="cr-res-tags" id="crResTags"></div>
+      <div class="cr-res-actions">
+        <button class="btn-ghost" style="margin:0;flex:1" onclick="crRelancer()">↻ Relancer</button>
+        <button class="btn-gold" style="margin:0;flex:1" onclick="crRegarder()">▶ Regarder</button>
+      </div>
+      <button class="btn-ghost" onclick="closeRouletteSpin()">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ POPUP DOUBLON ══ -->
 <div class="dup-overlay hidden" id="dupOverlay">
   <div class="dup-modal">
@@ -783,6 +892,7 @@ function renderAccueil(){
     bgList=bgList.concat(shuffled);
   }
   bg.innerHTML=bgList.map(p=>`<img class="hero-poster" src="${p}" alt="" loading="lazy">`).join('');
+  renderCrBg();
 
   // Récents
   const recFilms=films.slice(0,12);
@@ -1355,6 +1465,115 @@ async function confirmBuy(){
     closeBuyModal();renderAll();renderWish();
     showToast(`🎉 "${w.titre}" ajouté à ta collection !`);
   }catch(e){showToast('Erreur : '+e.message.slice(0,80));}
+}
+
+/* ══ CINÉROULETTE ══ */
+let rouletteFilters={support:'',genre:'',vu:''};
+let rouletteCurrentFilmId=null;
+let rouletteLastPool=[];
+
+function renderCrBg(){
+  const bg=document.getElementById('crBg');
+  const posters=films.filter(f=>f.poster).map(f=>f.poster);
+  const shuffled=[...posters].sort(()=>Math.random()-0.5).slice(0,10);
+  bg.innerHTML=shuffled.map(p=>`<img src="${p}" alt="" loading="lazy">`).join('');
+}
+
+function openRouletteFilters(){
+  const allGenres=[...new Set(films.flatMap(f=>f.genres||[]))].sort((a,b)=>a.localeCompare(b,'fr'));
+  const box=document.getElementById('crGenreChips');
+  box.innerHTML=['Tous',...allGenres].map(g=>`<div class="filter-chip${g==='Tous'?' active':''}" data-filter="genre" data-value="${g==='Tous'?'':esc(g)}" onclick="crSelectChip(this)">${esc(g)}</div>`).join('');
+  document.getElementById('crFilterOverlay').classList.remove('hidden');
+}
+function closeRouletteFilters(){
+  document.getElementById('crFilterOverlay').classList.add('hidden');
+}
+function crSelectChip(el){
+  const group=el.dataset.filter;
+  el.parentElement.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  rouletteFilters[group]=el.dataset.value||'';
+}
+
+function crBuildPool(){
+  return films.filter(f=>{
+    if(rouletteFilters.support && f.support!==rouletteFilters.support) return false;
+    if(rouletteFilters.genre && !(f.genres||[]).includes(rouletteFilters.genre)) return false;
+    if(rouletteFilters.vu==='nonvu' && f.vu) return false;
+    return true;
+  });
+}
+
+function launchRoulette(){
+  const pool=crBuildPool();
+  if(!pool.length){ showToast('Aucun film ne correspond à ces critères 😕'); return; }
+  rouletteLastPool=pool;
+  closeRouletteFilters();
+  runRouletteSpin(pool);
+}
+
+function runRouletteSpin(pool){
+  const target=pool[Math.floor(Math.random()*pool.length)];
+  rouletteCurrentFilmId=target.id;
+
+  const withPoster=films.filter(f=>f.poster);
+  const source=withPoster.length?withPoster:films;
+  const reelLength=24;
+  let reel=[];
+  for(let i=0;i<reelLength-1;i++){
+    reel.push(source[Math.floor(Math.random()*source.length)]);
+  }
+  reel.push(target);
+
+  document.getElementById('crResultView').classList.add('hidden');
+  document.getElementById('crSpinView').classList.remove('hidden');
+  document.getElementById('crSpinLabel').textContent='Lancement de la roue…';
+  document.getElementById('crSpinOverlay').classList.remove('hidden');
+
+  const itemH=130;
+  const track=document.getElementById('crReelTrack');
+  track.style.transition='none';
+  track.style.transform='translateY(0px)';
+  track.innerHTML=reel.map((f,i)=>`<div class="cr-reel-item${i===reel.length-1?' cr-target':''}">${f.poster?`<img src="${f.poster}" alt="">`:'<div style="font-size:32px">🎬</div>'}</div>`).join('');
+
+  void track.offsetHeight;
+  requestAnimationFrame(()=>{
+    const finalOffset=-(itemH*(reel.length-1));
+    track.style.transition='transform 3.4s cubic-bezier(.12,.85,.28,1)';
+    track.style.transform=`translateY(${finalOffset}px)`;
+  });
+
+  setTimeout(()=>{
+    const lbl=document.getElementById('crSpinLabel');
+    if(lbl) lbl.textContent='La roue ralentit…';
+  },1900);
+
+  setTimeout(()=>showRouletteResult(target),3500);
+}
+
+function showRouletteResult(f){
+  document.getElementById('crSpinView').classList.add('hidden');
+  document.getElementById('crResultView').classList.remove('hidden');
+  document.getElementById('crResPoster').src=f.poster||'';
+  document.getElementById('crResTitle').textContent=f.titre;
+  document.getElementById('crResMeta').textContent=[f.annee,f.real].filter(Boolean).join(' · ');
+  document.getElementById('crResNote').textContent=f.note?`⭐ ${f.note} /10`:'';
+  document.getElementById('crResTags').innerHTML=[
+    f.support?`<span class="filter-chip active" style="cursor:default">${esc(f.support)}</span>`:'',
+    ...(f.genres||[]).slice(0,2).map(g=>`<span class="filter-chip" style="cursor:default">${esc(g)}</span>`)
+  ].join('');
+}
+
+function crRelancer(){
+  runRouletteSpin(rouletteLastPool.length?rouletteLastPool:crBuildPool());
+}
+function crRegarder(){
+  const id=rouletteCurrentFilmId;
+  closeRouletteSpin();
+  if(id) openDetail(id);
+}
+function closeRouletteSpin(){
+  document.getElementById('crSpinOverlay').classList.add('hidden');
 }
 
 /* ── Initialisation ── */
