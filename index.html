@@ -188,7 +188,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 /* ── SECTIONS ── */
 .section{margin-bottom:28px;}
 .section-header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:14px;}
-.section-title{font-size:13px;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;}
+.section-title{font-size:13px;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;position:relative;padding-left:11px;}
+.section-title::before{content:'';position:absolute;left:0;top:1px;bottom:1px;width:3px;border-radius:2px;background:var(--gold);}
 .section-link{font-size:13px;color:var(--gold);font-weight:500;cursor:pointer;display:flex;align-items:center;gap:4px;}
 
 /* ── HORIZONTAL SCROLL ── */
@@ -221,7 +222,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
 /* ── SUPPORT CARDS ── */
 .support-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 20px;}
-.support-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:border-color .2s;display:flex;flex-direction:column;align-items:flex-start;gap:10px;overflow:hidden;}
+.support-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:border-color .2s;display:flex;flex-direction:column;align-items:flex-start;gap:10px;overflow:hidden;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.35);}
+.support-card::after{
+  content:'';position:absolute;right:-55px;bottom:-65px;width:200px;height:200px;border-radius:50%;
+  background:
+    repeating-radial-gradient(circle at center,rgba(255,255,255,.05) 0px,rgba(255,255,255,.05) 1px,transparent 2px,transparent 7px),
+    radial-gradient(circle at 38% 38%,rgba(255,255,255,.1),transparent 65%);
+  pointer-events:none;
+}
 .support-card:active{border-color:var(--gold);}
 .support-logo{height:44px;display:flex;align-items:center;}
 .support-logo svg,.support-logo img{height:100%;max-width:260px;width:auto;}
@@ -987,6 +995,16 @@ function buildChips(){
   }
 }
 
+function titleSortKey(titre){
+  return String(titre||'').replace(/^(le|la|les|l['’]|un|une|the|a|an)\s+/i,'').trim();
+}
+function compareTitles(a,b){
+  const ka=titleSortKey(a), kb=titleSortKey(b);
+  const da=/^[0-9]/.test(ka), db=/^[0-9]/.test(kb);
+  if(da!==db) return da?1:-1;
+  return ka.localeCompare(kb,'fr');
+}
+
 function renderFilms(){
   buildChips();
   const q=(document.getElementById('filmSearch').value||'').trim().toLowerCase();
@@ -997,7 +1015,7 @@ function renderFilms(){
     const mg=!filterGenre||(f.genres||[]).includes(filterGenre);
     return mq&&ms&&mv&&mg;
   });
-  list=[...list].sort((a,b)=>a.titre.localeCompare(b.titre,'fr'));
+  list=[...list].sort((a,b)=>compareTitles(a.titre,b.titre));
 
   const grid=document.getElementById('filmsGrid');
   const empty=document.getElementById('filmsEmpty');
