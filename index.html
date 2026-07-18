@@ -1357,8 +1357,12 @@ function wishToRow(w){
 }
 
 async function loadWishlist(){
-  try{wishlist=((await supa('GET','wishlist?select=*&order=titre.asc'))||[]).map(wishToLocal);}
-  catch(e){wishlist=[];}
+  try{
+    wishlist=((await supa('GET','wishlist?select=*&order=created_at.desc.nullslast'))||[]).map(wishToLocal);
+  }catch(e){
+    try{wishlist=((await supa('GET','wishlist?select=*&order=titre.asc'))||[]).map(wishToLocal);}
+    catch(e2){wishlist=[];}
+  }
   renderWish();
 }
 
@@ -1462,7 +1466,7 @@ async function saveWish(){
   try{
     const ins=await supa('POST','wishlist',wishToRow(w));
     const saved=Array.isArray(ins)?ins[0]:ins;
-    wishlist.push(wishToLocal(saved||{...w,id:'tmp-'+Date.now()}));
+    wishlist.unshift(wishToLocal(saved||{...w,id:'tmp-'+Date.now()}));
     closeWishModal();renderWish();
     showToast(`✅ "${w.titre}" ajouté aux souhaits !`);
   }catch(e){showToast('Erreur : '+e.message.slice(0,80));}
