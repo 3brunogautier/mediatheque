@@ -194,6 +194,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 /* ── HORIZONTAL SCROLL ── */
 .h-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 20px 4px;scrollbar-width:none;-ms-overflow-style:none;}
 .h-scroll::-webkit-scrollbar{display:none;}
+.h-scroll-wrap{position:relative;}
+.h-scroll-arrow{display:none;}
+@media(min-width:768px){
+  .h-scroll-wrap{padding:0 4px;}
+  .h-scroll-arrow{
+    display:flex;align-items:center;justify-content:center;
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(20,20,20,.85);color:#fff;font-size:22px;z-index:5;
+    box-shadow:0 2px 10px rgba(0,0,0,.4);transition:background .15s;
+  }
+  .h-scroll-arrow:hover{background:rgba(40,40,40,.95);}
+  .h-scroll-arrow.left{left:8px;}
+  .h-scroll-arrow.right{right:8px;}
+}
 
 /* ── MOVIE CARD (horizontal) ── */
 .movie-card{flex-shrink:0;width:110px;cursor:pointer;position:relative;}
@@ -491,7 +506,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
       <div class="section-title">Ajoutés récemment</div>
       <div class="section-link" onclick="navigate('films')">Voir tout ›</div>
     </div>
-    <div class="h-scroll" id="recentScroll"></div>
+    <div class="h-scroll-wrap">
+      <div class="h-scroll" id="recentScroll"></div>
+      <button class="h-scroll-arrow left" onclick="scrollHRow('recentScroll',-1)" aria-label="Précédent">‹</button>
+      <button class="h-scroll-arrow right" onclick="scrollHRow('recentScroll',1)" aria-label="Suivant">›</button>
+    </div>
   </div>
 
   <!-- Par support -->
@@ -508,7 +527,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
       <div class="section-title">🛒 Mes futurs achats</div>
       <div class="section-link" onclick="openWishAdd()">+ Ajouter</div>
     </div>
-    <div class="h-scroll" id="wishScroll"></div>
+    <div class="h-scroll-wrap">
+      <div class="h-scroll" id="wishScroll"></div>
+      <button class="h-scroll-arrow left" onclick="scrollHRow('wishScroll',-1)" aria-label="Précédent">‹</button>
+      <button class="h-scroll-arrow right" onclick="scrollHRow('wishScroll',1)" aria-label="Suivant">›</button>
+    </div>
     <div id="wishEmpty" class="hidden" style="padding:8px 40px 16px">
       <p style="color:var(--text3);font-size:13px">Aucun souhait — cliquez sur <strong style="color:var(--gold)">+ Ajouter</strong></p>
     </div>
@@ -1467,6 +1490,11 @@ async function confirmBuy(){
     closeBuyModal();renderAll();renderWish();
     showToast(`🎉 "${w.titre}" ajouté à ta collection !`);
   }catch(e){showToast('Erreur : '+e.message.slice(0,80));}
+}
+
+function scrollHRow(id,dir){
+  const el=document.getElementById(id);
+  if(el) el.scrollBy({left:dir*320,behavior:'smooth'});
 }
 
 /* ══ CINÉROULETTE ══ */
