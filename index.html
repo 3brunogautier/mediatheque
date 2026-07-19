@@ -169,8 +169,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
 /* ── CINÉROULETTE CARD ── */
 .cr-card{position:relative;margin:12px 20px 20px;border-radius:18px;overflow:hidden;min-height:150px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;}
-.cr-bg{position:absolute;inset:0;display:flex;gap:2px;overflow:hidden;}
-.cr-bg img{flex-shrink:0;width:70px;object-fit:cover;opacity:.4;}
+.cr-bg{position:absolute;inset:0;overflow:hidden;}
+.cr-bg::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 78% 40%,rgba(255,255,255,.10),transparent 55%),
+             linear-gradient(135deg,#1c1c1c 0%,#0e0e0e 70%);
+}
+.cr-die{position:absolute;right:-30px;top:50%;transform:translateY(-50%) rotate(-12deg);width:230px;height:230px;opacity:.14;}
 .cr-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,10,.97) 0%,rgba(10,10,10,.85) 45%,rgba(10,10,10,.35) 100%);}
 .cr-content{position:relative;z-index:2;padding:20px 22px;}
 .cr-title{font-size:19px;font-weight:700;letter-spacing:1.5px;color:#fff;margin-bottom:4px;}
@@ -489,7 +494,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
   <!-- CinéRoulette -->
   <div class="cr-card" onclick="openRouletteFilters()">
-    <div class="cr-bg" id="crBg"></div>
+    <div class="cr-bg">
+      <svg class="cr-die" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="8" width="84" height="84" rx="16" fill="none" stroke="#fff" stroke-width="4"/>
+        <circle cx="30" cy="30" r="7" fill="#fff"/>
+        <circle cx="70" cy="30" r="7" fill="#fff"/>
+        <circle cx="30" cy="70" r="7" fill="#fff"/>
+        <circle cx="70" cy="70" r="7" fill="#fff"/>
+        <circle cx="50" cy="50" r="7" fill="#fff"/>
+      </svg>
+    </div>
     <div class="cr-overlay"></div>
     <div class="cr-content">
       <div class="cr-title">CINÉROULETTE</div>
@@ -918,7 +932,6 @@ function renderAccueil(){
     bgList=bgList.concat(shuffled);
   }
   bg.innerHTML=bgList.map(p=>`<img class="hero-poster" src="${p}" alt="" loading="lazy">`).join('');
-  renderCrBg();
 
   // Récents
   const recFilms=films.slice(0,12);
@@ -1516,13 +1529,6 @@ function scrollHRow(id,dir){
 let rouletteFilters={support:'',genre:'',vu:''};
 let rouletteCurrentFilmId=null;
 let rouletteLastPool=[];
-
-function renderCrBg(){
-  const bg=document.getElementById('crBg');
-  const posters=films.filter(f=>f.poster).map(f=>f.poster);
-  const shuffled=[...posters].sort(()=>Math.random()-0.5).slice(0,10);
-  bg.innerHTML=shuffled.map(p=>`<img src="${p}" alt="" loading="lazy">`).join('');
-}
 
 function openRouletteFilters(){
   const allGenres=[...new Set(films.flatMap(f=>f.genres||[]))].sort((a,b)=>a.localeCompare(b,'fr'));
