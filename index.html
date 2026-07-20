@@ -33,7 +33,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
 /* ── APP SHELL ── */
 #app{display:flex;flex-direction:column;min-height:100vh;max-width:430px;margin:0 auto;position:relative;padding-top:env(safe-area-inset-top);}
-.page{display:none;flex:1;overflow-y:auto;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 20px);}
+.page{display:none;flex:1;overflow-y:auto;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 30px);}
 .page.active{display:block;}
 
 /* ── DESKTOP LAYOUT (barre horizontale en haut) ── */
@@ -139,7 +139,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
   background:rgba(15,15,15,0.97);border-top:0.5px solid var(--border);
   display:flex;align-items:center;justify-content:space-around;
   backdrop-filter:blur(20px);z-index:100;
-  padding-bottom:env(safe-area-inset-bottom);
+  padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
 }
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:8px 16px;border-radius:10px;transition:all .2s;flex:1;}
 .nav-item svg{width:22px;height:22px;stroke:var(--text3);transition:stroke .2s;}
