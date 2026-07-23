@@ -254,7 +254,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 .grid-card{cursor:pointer;position:relative;}
 .grid-card img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;background:var(--bg3);}
 .grid-card .gc-ph{width:100%;aspect-ratio:2/3;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px;}
-.grid-card .gc-vu{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;}
+.grid-card .gc-badge{position:absolute;top:5px;left:5px;background:rgba(0,0,0,.75);border:0.5px solid rgba(255,255,255,.15);border-radius:4px;padding:2px 5px;font-size:9px;font-weight:700;color:var(--gold);backdrop-filter:blur(4px);}
 .grid-card .gc-title{font-size:11px;font-weight:500;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .grid-card .gc-year{font-size:10px;color:var(--text3);}
 @media(min-width:768px){
@@ -379,7 +379,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 .fd-badge{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;}
 .fd-badge.sup-dvd{background:#14532d;color:#86efac;} .fd-badge.sup-blu{background:#1e3a5f;color:#93c5fd;}
 .fd-badge.sup-uhd{background:#3b0764;color:#d8b4fe;} .fd-badge.sup-col{background:#451a03;color:#fcd34d;}
-.fd-badge.vu{background:rgba(255,255,255,.12);color:var(--gold);border:0.5px solid var(--gold);}
 .fd-note{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:700;color:var(--gold);margin-bottom:16px;}
 .fd-note small{font-size:14px;color:var(--text3);}
 .fd-meta{display:flex;gap:20px;margin-bottom:20px;}
@@ -389,7 +388,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 .fd-syn{font-size:14px;color:var(--text2);line-height:1.7;}
 .fd-actions{display:flex;gap:10px;margin-top:24px;}
 .fd-actions button{flex:1;padding:13px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
-.fd-btn-vu{background:var(--gold);color:#000;border:none;}
 .fd-btn-del{background:var(--bg3);color:#f87171;border:0.5px solid #f87171;}
 
 /* ── WISHLIST ── */
@@ -632,10 +630,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
           <option>4K UHD</option><option>Edition Collector</option>
         </select>
       </div>
-      <label class="check-row">
-        <input type="checkbox" id="vuChk">
-        <span>Déjà vu</span>
-      </label>
     </div>
     <button class="btn-gold hidden" id="saveBtn" onclick="saveFilm()">✓ Enregistrer</button>
     <button class="btn-ghost" onclick="closeModal()">Annuler</button>
@@ -710,10 +704,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
         <option>4K UHD</option><option>Edition Collector</option>
       </select>
     </div>
-    <label class="check-row" style="margin-bottom:12px">
-      <input type="checkbox" id="buyVuChk">
-      <span>Déjà vu</span>
-    </label>
     <button class="btn-gold" onclick="confirmBuy()">✓ Ajouter à ma collection</button>
     <button class="btn-ghost" onclick="closeBuyModal()">Annuler</button>
   </div>
@@ -736,12 +726,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
     <label class="cr-label">Genre</label>
     <div class="cr-chip-row" id="crGenreChips"></div>
-
-    <label class="cr-label">Statut</label>
-    <div class="cr-chip-row" id="crVuChips">
-      <div class="filter-chip active" data-filter="vu" data-value="" onclick="crSelectChip(this)">Tous</div>
-      <div class="filter-chip" data-filter="vu" data-value="nonvu" onclick="crSelectChip(this)">Seulement non vus</div>
-    </div>
 
     <button class="btn-gold" onclick="launchRoulette()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="vertical-align:-3px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
@@ -910,14 +894,12 @@ function renderAll(){ renderAccueil(); renderFilms(); renderCats(); renderStats(
 /* ── ACCUEIL ── */
 function renderAccueil(){
   const t=films.length;
-  const vus=films.filter(f=>f.vu).length;
-  const nonVus=t-vus;
   const notes=films.filter(f=>f.note).map(f=>f.note);
   const avgNote=notes.length?(notes.reduce((a,b)=>a+b,0)/notes.length).toFixed(1):'—';
 
   // Hero count
   document.getElementById('heroCount').textContent=t;
-  document.getElementById('heroSub').innerHTML=`films &nbsp;·&nbsp; <span>${nonVus} non vus</span>`;
+  document.getElementById('heroSub').textContent='films';
 
   // Hero bg avec les affiches, mélangées et répétées pour remplir toute la largeur
   const bg=document.getElementById('heroBg');
@@ -984,7 +966,6 @@ function buildChips(){
     {label:'Blu-ray',val:'Blu-ray',          type:'sup'},
     {label:'4K UHD', val:'4K UHD',           type:'sup'},
     {label:'Collector',val:'Edition Collector',type:'sup'},
-    {label:'Non vus',val:'__nonvus',         type:'sup'},
   ];
   fr.innerHTML=chips.map(c=>{
     const isActive=(c.val===''&&!filterSupport&&!filterGenre)||(c.val===filterSupport&&c.val!=='')||(filterGenre&&c.val==='');
@@ -1012,10 +993,9 @@ function renderFilms(){
   const q=(document.getElementById('filmSearch').value||'').trim().toLowerCase();
   let list=films.filter(f=>{
     const mq=!q||f.titre.toLowerCase().includes(q)||(f.real||'').toLowerCase().includes(q)||(f.genres||[]).some(g=>g.toLowerCase().includes(q));
-    const ms=!filterSupport||filterSupport==='__nonvus'||f.support===filterSupport;
-    const mv=filterSupport!=='__nonvus'||!f.vu;
+    const ms=!filterSupport||f.support===filterSupport;
     const mg=!filterGenre||(f.genres||[]).includes(filterGenre);
-    return mq&&ms&&mv&&mg;
+    return mq&&ms&&mg;
   });
   list=[...list].sort((a,b)=>compareTitles(a.titre,b.titre));
 
@@ -1024,12 +1004,15 @@ function renderFilms(){
   if(!list.length){ grid.innerHTML=''; empty.classList.remove('hidden'); }
   else {
     empty.classList.add('hidden');
-    grid.innerHTML=list.map(f=>`<div class="grid-card" onclick="openDetail('${f.id}')">
+    grid.innerHTML=list.map(f=>{
+      const badge=f.support==='4K UHD'?'4K':f.support==='Blu-ray'?'BD':f.support==='DVD'?'DVD':'COL';
+      return `<div class="grid-card" onclick="openDetail('${f.id}')">
       ${f.poster?`<img src="${f.poster}" alt="" loading="lazy">`:`<div class="gc-ph">🎬</div>`}
-      ${f.vu?`<div class="gc-vu">✓</div>`:''}
+      <div class="gc-badge">${badge}</div>
       <div class="gc-title">${esc(f.titre)}</div>
       <div class="gc-year">${f.annee||''}</div>
-    </div>`).join('');
+    </div>`;
+    }).join('');
   }
 }
 
@@ -1105,7 +1088,7 @@ function filterByCat(genre){
 /* ── STATS ── */
 function renderStats(){
   const t=films.length;
-  const vus=films.filter(f=>f.vu).length;
+  const nbGenres=new Set(films.flatMap(f=>f.genres||[])).size;
   const notes=films.filter(f=>f.note).map(f=>f.note);
   const avg=notes.length?(notes.reduce((a,b)=>a+b,0)/notes.length).toFixed(1):'—';
   const annees=films.filter(f=>f.annee).map(f=>Number(f.annee));
@@ -1113,7 +1096,7 @@ function renderStats(){
 
   document.getElementById('statsGrid').innerHTML=`
     <div class="big-stat"><div class="bsv">${t}</div><div class="bsl">Films au total</div></div>
-    <div class="big-stat"><div class="bsv">${vus}</div><div class="bsl">Films vus</div></div>
+    <div class="big-stat"><div class="bsv">${nbGenres}</div><div class="bsl">Genres différents</div></div>
     <div class="big-stat"><div class="bsv">${avg}</div><div class="bsl">Note moyenne</div></div>
     <div class="big-stat"><div class="bsv">${oldest}</div><div class="bsl">Film le + ancien</div></div>`;
 
@@ -1146,7 +1129,7 @@ function openDetail(id){
   document.getElementById('fdOriginal').textContent=f.titreOriginal&&f.titreOriginal!==f.titre?f.titreOriginal:'';
   document.getElementById('fdNote').innerHTML=f.note?`⭐ ${f.note} <small>/10</small>`:'';
   const sc=f.support==='DVD'?'sup-dvd':f.support==='Blu-ray'?'sup-blu':f.support==='4K UHD'?'sup-uhd':'sup-col';
-  document.getElementById('fdBadges').innerHTML=`<span class="fd-badge ${sc}">${esc(f.support)}</span>${f.vu?`<span class="fd-badge vu">✓ Vu</span>`:''}`;
+  document.getElementById('fdBadges').innerHTML=`<span class="fd-badge ${sc}">${esc(f.support)}</span>`;
   document.getElementById('fdMeta').innerHTML=[
     f.annee?`<div class="fd-meta-item"><div class="fdml">Année</div><div class="fdmv">${f.annee}</div></div>`:'',
     f.real?`<div class="fd-meta-item"><div class="fdml">Réalisateur</div><div class="fdmv">${esc(f.real)}</div></div>`:'',
@@ -1154,7 +1137,6 @@ function openDetail(id){
   ].filter(Boolean).join('');
   document.getElementById('fdSyn').textContent=f.synopsis||'Aucun synopsis disponible.';
   document.getElementById('fdActions').innerHTML=`
-    <button class="fd-btn-vu" onclick="toggleVuDetail('${id}')">${f.vu?'👁‍🗨 Marquer non vu':'👁 Marquer vu'}</button>
     <button class="fd-btn-del" onclick="delFilmDetail('${id}')">🗑 Supprimer</button>`;
   document.getElementById('filmDetail').classList.add('open');
   document.getElementById('filmDetail').scrollTop=0;
@@ -1162,13 +1144,6 @@ function openDetail(id){
 
 function closeDetail(){
   document.getElementById('filmDetail').classList.remove('open');
-}
-
-async function toggleVuDetail(id){
-  const f=films.find(x=>x.id===id);if(!f)return;
-  const nv=!f.vu;
-  try{await supa('PATCH',`films?id=eq.${encodeURIComponent(id)}`,{vu:nv});f.vu=nv;renderAll();openDetail(id);showToast(nv?'✓ Marqué vu':'Marqué non vu');}
-  catch(e){showToast('Erreur : '+e.message.slice(0,60));}
 }
 
 async function delFilmDetail(id){
@@ -1188,7 +1163,6 @@ function openAdd(){
   document.getElementById('jacketSec').classList.add('hidden');
   document.getElementById('formFields').classList.remove('visible');
   document.getElementById('supSel').value='';
-  document.getElementById('vuChk').checked=false;
   document.getElementById('saveBtn').classList.add('hidden');
   document.getElementById('overlay').classList.remove('hidden');
   setTimeout(()=>document.getElementById('addSearch').focus(),150);
@@ -1298,8 +1272,7 @@ async function saveFilm(){
   if(!selected){showToast('Sélectionnez un film');return;}
   const support=document.getElementById('supSel').value;
   if(!support){showToast('Choisissez un support');return;}
-  const vu=document.getElementById('vuChk').checked;
-  const f={...selected,support,vu,poster:activeJacket||selected.poster};
+  const f={...selected,support,poster:activeJacket||selected.poster};
 
   // Vérifier doublon
   const dup=checkDuplicate(selected);
@@ -1311,7 +1284,6 @@ async function saveFilm(){
       <div class="dup-film-info">
         <div class="dt">${esc(dup.titre)}</div>
         <div class="ds">${dup.annee||''} · ${esc(dup.support)}</div>
-        ${dup.vu?'<div class="ds" style="margin-top:4px;color:var(--gold)">✓ Déjà vu</div>':''}
       </div>`;
     document.getElementById('dupOverlay').classList.remove('hidden');
     return;
@@ -1490,7 +1462,6 @@ function openBuyModal(id){
   pendingWishId=id;
   document.getElementById('buyFilmName').textContent=w.titre;
   document.getElementById('buySupSel').value=w.support||'';
-  document.getElementById('buyVuChk').checked=false;
   document.getElementById('buyOverlay').classList.remove('hidden');
 }
 function closeBuyModal(){
@@ -1502,10 +1473,9 @@ async function confirmBuy(){
   const w=wishlist.find(x=>x.id===pendingWishId); if(!w) return;
   const support=document.getElementById('buySupSel').value;
   if(!support){showToast('Choisissez un support');return;}
-  const vu=document.getElementById('buyVuChk').checked;
   try{
     const f={tmdbId:w.tmdbId,titre:w.titre,titreOriginal:w.titreOriginal,genres:[],
-      annee:w.annee,real:w.real,synopsis:w.synopsis,poster:w.poster,note:null,support,vu};
+      annee:w.annee,real:w.real,synopsis:w.synopsis,poster:w.poster,note:null,support};
     const ins=await supa('POST','films',toRow(f));
     const saved=Array.isArray(ins)?ins[0]:ins;
     films.unshift(toLocal(saved||{...f,id:'tmp-'+Date.now()}));
@@ -1522,7 +1492,7 @@ function scrollHRow(id,dir){
 }
 
 /* ══ CINÉROULETTE ══ */
-let rouletteFilters={support:'',genre:'',vu:''};
+let rouletteFilters={support:'',genre:''};
 let rouletteCurrentFilmId=null;
 let rouletteLastPool=[];
 
@@ -1546,7 +1516,6 @@ function crBuildPool(){
   return films.filter(f=>{
     if(rouletteFilters.support && f.support!==rouletteFilters.support) return false;
     if(rouletteFilters.genre && !(f.genres||[]).includes(rouletteFilters.genre)) return false;
-    if(rouletteFilters.vu==='nonvu' && f.vu) return false;
     return true;
   });
 }
