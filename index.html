@@ -293,6 +293,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 .big-stat{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;}
 .big-stat .bsv{font-size:36px;font-weight:800;color:var(--gold);}
 .big-stat .bsl{font-size:12px;color:var(--text3);margin-top:4px;}
+.big-stat .bst{font-size:12px;color:var(--text2);margin-top:5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bar-chart{padding:0 20px;margin-bottom:24px;}
 .bar-item{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .bar-label{font-size:12px;color:var(--text2);min-width:100px;}
@@ -1103,15 +1104,18 @@ function filterByCat(genre){
 function renderStats(){
   const t=films.length;
   const nbGenres=new Set(films.flatMap(f=>f.genres||[])).size;
-  const annees=films.filter(f=>f.annee).map(f=>Number(f.annee));
-  const oldest=annees.length?Math.min(...annees):'—';
-  const newest=annees.length?Math.max(...annees):'—';
+  const withYear=films.filter(f=>f.annee);
+  let oldestFilm=null,newestFilm=null;
+  withYear.forEach(f=>{
+    if(!oldestFilm||Number(f.annee)<Number(oldestFilm.annee)) oldestFilm=f;
+    if(!newestFilm||Number(f.annee)>Number(newestFilm.annee)) newestFilm=f;
+  });
 
   document.getElementById('statsGrid').innerHTML=`
     <div class="big-stat"><div class="bsv">${t}</div><div class="bsl">Films au total</div></div>
     <div class="big-stat"><div class="bsv">${nbGenres}</div><div class="bsl">Genres différents</div></div>
-    <div class="big-stat"><div class="bsv">${newest}</div><div class="bsl">Film le + récent</div></div>
-    <div class="big-stat"><div class="bsv">${oldest}</div><div class="bsl">Film le + ancien</div></div>`;
+    <div class="big-stat"><div class="bsv">${newestFilm?newestFilm.annee:'—'}</div><div class="bsl">Film le + récent</div>${newestFilm?`<div class="bst">${esc(newestFilm.titre)}</div>`:''}</div>
+    <div class="big-stat"><div class="bsv">${oldestFilm?oldestFilm.annee:'—'}</div><div class="bsl">Film le + ancien</div>${oldestFilm?`<div class="bst">${esc(oldestFilm.titre)}</div>`:''}</div>`;
 
   // Genre chart — échelle calée sur l'objectif de collection (450 films), pas sur le max courant
   const COLLECTION_GOAL=450;
