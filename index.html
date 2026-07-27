@@ -1103,15 +1103,14 @@ function filterByCat(genre){
 function renderStats(){
   const t=films.length;
   const nbGenres=new Set(films.flatMap(f=>f.genres||[])).size;
-  const notes=films.filter(f=>f.note).map(f=>f.note);
-  const avg=notes.length?(notes.reduce((a,b)=>a+b,0)/notes.length).toFixed(1):'—';
   const annees=films.filter(f=>f.annee).map(f=>Number(f.annee));
   const oldest=annees.length?Math.min(...annees):'—';
+  const newest=annees.length?Math.max(...annees):'—';
 
   document.getElementById('statsGrid').innerHTML=`
     <div class="big-stat"><div class="bsv">${t}</div><div class="bsl">Films au total</div></div>
     <div class="big-stat"><div class="bsv">${nbGenres}</div><div class="bsl">Genres différents</div></div>
-    <div class="big-stat"><div class="bsv">${avg}</div><div class="bsl">Note moyenne</div></div>
+    <div class="big-stat"><div class="bsv">${newest}</div><div class="bsl">Film le + récent</div></div>
     <div class="big-stat"><div class="bsv">${oldest}</div><div class="bsl">Film le + ancien</div></div>`;
 
   // Genre chart — échelle calée sur l'objectif de collection (450 films), pas sur le max courant
