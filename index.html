@@ -277,9 +277,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 .cat-card:hover .cat-bg{opacity:.7;transform:scale(1.08);}
 .cat-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.15) 0%,rgba(0,0,0,.35) 45%,rgba(0,0,0,.92) 100%);}
 .cat-info{position:relative;z-index:2;padding:14px 16px 12px;flex:1;display:flex;flex-direction:column;justify-content:flex-end;}
-.cat-name{font-size:18px;font-weight:800;color:#fff;line-height:1.2;letter-spacing:.2px;}
+.cat-name{font-family:'Montserrat',sans-serif;font-size:19px;font-weight:300;color:#fff;line-height:1.2;letter-spacing:.3px;}
 .cat-count{font-size:12px;font-weight:300;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.3px;}
-.cat-bar{height:3px;width:100%;position:relative;z-index:2;flex-shrink:0;}
 @media(min-width:768px){
   .cat-grid{grid-template-columns:repeat(4,minmax(0,1fr));padding:0 40px;}
   .cat-card{min-height:200px;}
@@ -1077,7 +1076,6 @@ function renderCats() {
   g.innerHTML = genres.map(gen => {
     const list = films.filter(f => (f.genres||[]).includes(gen));
     const n = list.length;
-    const m = GENRE_META[gen] || { color:'#dc2626' };
     // Affiche aléatoire parmi les films possédés dans ce genre (plus de variété qu'un choix fixe)
     const withPoster = list.filter(f => f.poster);
     const pick = withPoster.length ? withPoster[Math.floor(Math.random()*withPoster.length)] : null;
@@ -1088,7 +1086,6 @@ function renderCats() {
         <div class="cat-name">${esc(gen)}</div>
         <div class="cat-count">${n} film${n>1?'s':''}</div>
       </div>
-      <div class="cat-bar" style="background:${m.color}"></div>
     </div>`;
   }).join('');
 }
