@@ -170,6 +170,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 /* ── CINÉROULETTE CARD ── */
 .cr-card{position:relative;margin:12px 20px 20px;border-radius:18px;overflow:hidden;min-height:150px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;}
 .cr-bg{position:absolute;inset:0;overflow:hidden;}
+.cr-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);height:120px;width:auto;opacity:.92;}
 .cr-bg::before{
   content:'';position:absolute;inset:0;
   background:radial-gradient(circle at 78% 50%,rgba(255,255,255,.08),transparent 55%),
@@ -518,7 +519,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
   <!-- CinéRoulette -->
   <div class="cr-card" onclick="openRouletteFilters()">
-    <div class="cr-bg"></div>
+    <div class="cr-bg"><img class="cr-icon" src="cr-icon.png" alt=""></div>
     <div class="cr-overlay"></div>
     <div class="cr-content">
       <div class="cr-title">CINÉROULETTE</div>
