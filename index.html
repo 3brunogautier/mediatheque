@@ -1128,7 +1128,7 @@ function renderStats(){
 
   // Genre chart — échelle calée sur l'objectif de collection (450 films), pas sur le max courant
   const COLLECTION_GOAL=450;
-  const genres=[...new Set(films.flatMap(f=>f.genres||[]))].map(g=>({g,n:films.filter(f=>(f.genres||[]).includes(g)).length})).sort((a,b)=>b.n-a.n).slice(0,8);
+  const genres=[...new Set(films.flatMap(f=>f.genres||[]))].map(g=>({g,n:films.filter(f=>(f.genres||[]).includes(g)).length})).sort((a,b)=>b.n-a.n);
   document.getElementById('genreChart').innerHTML=genres.map(({g,n})=>`<div class="bar-item">
     <div class="bar-label">${esc(g)}</div>
     <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,Math.round(n/COLLECTION_GOAL*100))}%"></div></div>
@@ -1191,6 +1191,8 @@ function openAdd(){
   document.getElementById('supSel').value='';
   document.getElementById('saveBtn').classList.add('hidden');
   document.getElementById('overlay').classList.remove('hidden');
+  document.getElementById('overlay').scrollTop=0;
+  document.querySelector('#overlay .modal').scrollTop=0;
   setTimeout(()=>document.getElementById('addSearch').focus(),150);
 }
 function closeModal(){document.getElementById('overlay').classList.add('hidden');clearTimeout(searchTimer);}
