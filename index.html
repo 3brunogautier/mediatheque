@@ -354,7 +354,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 
 .vinted-photo-drop{width:100%;aspect-ratio:4/3;background:var(--bg3);border:1.5px dashed var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;}
 .vinted-photo-drop img{width:100%;height:100%;object-fit:cover;}
-#vintedPhotoPlaceholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text3);font-size:13px;}
+#vintedPhotoPlaceholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text3);font-size:13px;text-align:center;padding:0 20px;}
+.vinted-fetch-btn{flex-shrink:0;background:var(--gold);color:#000;border:none;border-radius:var(--radius);padding:0 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.vinted-fetch-btn:disabled{opacity:.5;cursor:default;}
+.vinted-fetch-status{font-size:12px;margin-top:8px;color:var(--text3);}
+.vinted-fetch-status.ok{color:#4ade80;}
+.vinted-fetch-status.err{color:#f87171;}
 
 .vinted-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 20px 20px;}
 .vinted-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;}
@@ -840,12 +845,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
     <h2 style="margin-bottom:16px">Ajouter un favori Vinted</h2>
 
     <div class="form-group">
+      <label>Lien de l'annonce *</label>
+      <div style="display:flex;gap:8px">
+        <input type="url" id="vintedUrl" placeholder="https://www.vinted.fr/…" style="flex:1">
+        <button type="button" class="vinted-fetch-btn" id="vintedFetchBtn" onclick="fetchVintedInfo()">Récupérer</button>
+      </div>
+      <p id="vintedFetchStatus" class="vinted-fetch-status hidden"></p>
+    </div>
+
+    <div class="form-group">
       <label>Photo *</label>
       <div class="vinted-photo-drop" id="vintedPhotoDrop" onclick="document.getElementById('vintedPhotoInput').click()">
         <img id="vintedPhotoPreview" class="hidden" alt="">
         <div id="vintedPhotoPlaceholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="26" height="26"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
-          <span>Choisir une photo</span>
+          <span>Récupérée automatiquement, ou choisis-en une</span>
         </div>
       </div>
       <input type="file" id="vintedPhotoInput" accept="image/*" class="hidden" onchange="onVintedPhotoChange(event)">
@@ -854,11 +868,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
     <div class="form-group">
       <label>Titre (optionnel)</label>
       <input type="text" id="vintedTitre" placeholder="Ex : Coffret Alien 4K">
-    </div>
-
-    <div class="form-group">
-      <label>Lien de l'annonce *</label>
-      <input type="url" id="vintedUrl" placeholder="https://www.vinted.fr/…">
     </div>
 
     <div class="form-group">
@@ -1754,10 +1763,58 @@ function openVintedAdd(){
   document.getElementById('vintedTitre').value='';
   document.getElementById('vintedUrl').value='';
   document.getElementById('vintedPrix').value='';
+  const status=document.getElementById('vintedFetchStatus');
+  status.classList.add('hidden');
+  status.className='vinted-fetch-status hidden';
   document.getElementById('vintedOverlay').classList.remove('hidden');
 }
 function closeVintedModal(){
   document.getElementById('vintedOverlay').classList.add('hidden');
+}
+
+async function fetchVintedInfo(){
+  const url=document.getElementById('vintedUrl').value.trim();
+  const status=document.getElementById('vintedFetchStatus');
+  const btn=document.getElementById('vintedFetchBtn');
+  if(!url){showToast('Colle d\'abord le lien de l\'annonce');return;}
+  btn.disabled=true;btn.textContent='…';
+  status.classList.remove('hidden');
+  status.className='vinted-fetch-status';
+  status.textContent='Récupération des infos…';
+  try{
+    const proxyUrl='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+    const r=await fetch(proxyUrl);
+    if(!r.ok) throw new Error('fetch failed');
+    const html=await r.text();
+    const doc=new DOMParser().parseFromString(html,'text/html');
+    const ogImage=doc.querySelector('meta[property="og:image"]')?.content;
+    let ogTitle=doc.querySelector('meta[property="og:title"]')?.content
+      || doc.querySelector('title')?.textContent || '';
+    ogTitle=ogTitle.replace(/\s*\|\s*Vinted\s*$/i,'').trim();
+
+    if(ogImage){
+      vintedPhotoData=ogImage;
+      const preview=document.getElementById('vintedPhotoPreview');
+      preview.src=ogImage;
+      preview.classList.remove('hidden');
+      document.getElementById('vintedPhotoPlaceholder').classList.add('hidden');
+    }
+    if(ogTitle && !document.getElementById('vintedTitre').value){
+      document.getElementById('vintedTitre').value=ogTitle;
+    }
+    if(ogImage){
+      status.className='vinted-fetch-status ok';
+      status.textContent='✓ Infos récupérées';
+    }else{
+      status.className='vinted-fetch-status err';
+      status.textContent='Aucune image trouvée — choisis une photo manuellement';
+    }
+  }catch(e){
+    status.className='vinted-fetch-status err';
+    status.textContent='Impossible de récupérer les infos — choisis une photo manuellement';
+  }finally{
+    btn.disabled=false;btn.textContent='Récupérer';
+  }
 }
 
 function onVintedPhotoChange(evt){
