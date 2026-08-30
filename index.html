@@ -347,8 +347,29 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 /* Champs formulaire */
 .form-group{margin-bottom:12px;}
 .form-group label{display:block;font-size:12px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.form-group input[type="text"],.form-group input[type="url"]{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);padding:13px 14px;font-size:15px;color:var(--text);outline:none;}
+.form-group input[type="text"]:focus,.form-group input[type="url"]:focus{border-color:var(--gold);}
 .form-group select{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);padding:13px 14px;font-size:15px;color:var(--text);outline:none;appearance:none;-webkit-appearance:none;}
 .form-group select:focus{border-color:var(--gold);}
+
+.vinted-photo-drop{width:100%;aspect-ratio:4/3;background:var(--bg3);border:1.5px dashed var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;}
+.vinted-photo-drop img{width:100%;height:100%;object-fit:cover;}
+#vintedPhotoPlaceholder{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text3);font-size:13px;}
+
+.vinted-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 20px 20px;}
+.vinted-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;}
+.vinted-card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
+.vinted-card .vc-del{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;backdrop-filter:blur(4px);}
+.vinted-card .vc-body{padding:10px 12px 12px;}
+.vinted-card .vc-titre{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.vinted-card .vc-prix{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:8px;}
+.vinted-card .vc-link{display:block;text-align:center;background:var(--bg4);border-radius:10px;padding:8px;font-size:12px;font-weight:600;color:var(--text);text-decoration:none;}
+@media(min-width:768px){
+  .vinted-grid{grid-template-columns:repeat(4,minmax(0,1fr));padding:0 40px 20px;}
+}
+@media(min-width:1200px){
+  .vinted-grid{grid-template-columns:repeat(6,minmax(0,1fr));}
+}
 .check-row{display:flex;align-items:center;gap:10px;padding:4px 0;cursor:pointer;}
 .check-row input{width:18px;height:18px;accent-color:var(--gold);cursor:pointer;}
 .check-row span{font-size:14px;}
@@ -598,6 +619,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
   <div class="bar-chart" id="supportChart"></div>
 </div>
 
+<!-- ══ PAGE VINTED ══ -->
+<div id="page-vinted" class="page">
+  <div class="page-header">
+    <h1>Vinted</h1>
+    <div class="header-actions">
+      <div class="icon-btn" onclick="openVintedAdd()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 5v14M5 12h14"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="vinted-grid" id="vintedGrid"></div>
+  <div id="vintedEmpty" class="hidden" style="padding:40px 20px;text-align:center">
+    <div style="font-size:40px;margin-bottom:10px">🛍️</div>
+    <p style="color:var(--text3);font-size:13px">Aucun favori pour l'instant — appuie sur <strong style="color:var(--gold)">+</strong> pour en ajouter un</p>
+  </div>
+</div>
+
 <!-- ══ BOTTOM NAV ══ -->
 <nav class="bottom-nav">
   <div class="nav-item active" data-page="accueil" onclick="navigate('accueil')">
@@ -615,6 +653,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
   <div class="nav-item" data-page="stats" onclick="navigate('stats')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     <span>Statistiques</span>
+  </div>
+  <div class="nav-item" data-page="vinted" onclick="navigate('vinted')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <span>Vinted</span>
   </div>
 </nav>
 
@@ -791,6 +833,44 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
   </div>
 </div>
 
+<!-- ══ VINTED : Ajouter un favori ══ -->
+<div class="wish-overlay hidden" id="vintedOverlay" onclick="if(event.target===this)closeVintedModal()">
+  <div class="wish-modal">
+    <div class="modal-handle"></div>
+    <h2 style="margin-bottom:16px">Ajouter un favori Vinted</h2>
+
+    <div class="form-group">
+      <label>Photo *</label>
+      <div class="vinted-photo-drop" id="vintedPhotoDrop" onclick="document.getElementById('vintedPhotoInput').click()">
+        <img id="vintedPhotoPreview" class="hidden" alt="">
+        <div id="vintedPhotoPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="26" height="26"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+          <span>Choisir une photo</span>
+        </div>
+      </div>
+      <input type="file" id="vintedPhotoInput" accept="image/*" class="hidden" onchange="onVintedPhotoChange(event)">
+    </div>
+
+    <div class="form-group">
+      <label>Titre (optionnel)</label>
+      <input type="text" id="vintedTitre" placeholder="Ex : Coffret Alien 4K">
+    </div>
+
+    <div class="form-group">
+      <label>Lien de l'annonce *</label>
+      <input type="url" id="vintedUrl" placeholder="https://www.vinted.fr/…">
+    </div>
+
+    <div class="form-group">
+      <label>Prix (optionnel)</label>
+      <input type="text" id="vintedPrix" placeholder="Ex : 25 €">
+    </div>
+
+    <button class="btn-gold" onclick="saveVintedItem()">✓ Ajouter</button>
+    <button class="btn-ghost" onclick="closeVintedModal()">Annuler</button>
+  </div>
+</div>
+
 <!-- ══ POPUP DOUBLON ══ -->
 <div class="dup-overlay hidden" id="dupOverlay">
   <div class="dup-modal">
@@ -912,6 +992,7 @@ function navigate(page){
   if(page==='cats')    renderCats();
   if(page==='stats')   renderStats();
   if(page==='accueil') renderAccueil();
+  if(page==='vinted')  renderVintedGrid();
 }
 
 /* ── RENDER ALL ── */
@@ -1633,9 +1714,108 @@ function closeRouletteSpin(){
   document.getElementById('crSpinOverlay').classList.add('hidden');
 }
 
+/* ══ VINTED ══ */
+let vintedItems=[];
+let vintedPhotoData=null;
+
+async function loadVintedItems(){
+  try{
+    vintedItems=((await supa('GET','vinted_favoris?select=*&order=created_at.desc.nullslast'))||[]);
+  }catch(e){
+    vintedItems=[];
+  }
+}
+
+function renderVintedGrid(){
+  const g=document.getElementById('vintedGrid');
+  const empty=document.getElementById('vintedEmpty');
+  if(!vintedItems.length){
+    g.innerHTML='';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  g.innerHTML=vintedItems.map(v=>`<div class="vinted-card">
+    ${v.photo?`<img src="${v.photo}" alt="" loading="lazy">`:''}
+    <button class="vc-del" onclick="delVintedItem('${v.id}')">✕</button>
+    <div class="vc-body">
+      ${v.titre?`<div class="vc-titre">${esc(v.titre)}</div>`:''}
+      ${v.prix?`<div class="vc-prix">${esc(v.prix)}</div>`:''}
+      <a class="vc-link" href="${esc(v.url)}" target="_blank" rel="noopener">Voir l'annonce ↗</a>
+    </div>
+  </div>`).join('');
+}
+
+function openVintedAdd(){
+  vintedPhotoData=null;
+  document.getElementById('vintedPhotoInput').value='';
+  document.getElementById('vintedPhotoPreview').classList.add('hidden');
+  document.getElementById('vintedPhotoPlaceholder').classList.remove('hidden');
+  document.getElementById('vintedTitre').value='';
+  document.getElementById('vintedUrl').value='';
+  document.getElementById('vintedPrix').value='';
+  document.getElementById('vintedOverlay').classList.remove('hidden');
+}
+function closeVintedModal(){
+  document.getElementById('vintedOverlay').classList.add('hidden');
+}
+
+function onVintedPhotoChange(evt){
+  const file=evt.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxW=800;
+      const scale=Math.min(1,maxW/img.width);
+      const canvas=document.createElement('canvas');
+      canvas.width=img.width*scale;
+      canvas.height=img.height*scale;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      vintedPhotoData=canvas.toDataURL('image/jpeg',0.82);
+      const preview=document.getElementById('vintedPhotoPreview');
+      preview.src=vintedPhotoData;
+      preview.classList.remove('hidden');
+      document.getElementById('vintedPhotoPlaceholder').classList.add('hidden');
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveVintedItem(){
+  const url=document.getElementById('vintedUrl').value.trim();
+  if(!url){showToast('Colle le lien de l\'annonce');return;}
+  if(!vintedPhotoData){showToast('Choisis une photo');return;}
+  const titre=document.getElementById('vintedTitre').value.trim();
+  const prix=document.getElementById('vintedPrix').value.trim();
+  try{
+    const row={url,titre:titre||null,prix:prix||null,photo:vintedPhotoData};
+    const ins=await supa('POST','vinted_favoris',row);
+    const saved=Array.isArray(ins)?ins[0]:ins;
+    vintedItems.unshift(saved||{...row,id:'tmp-'+Date.now()});
+    closeVintedModal();
+    renderVintedGrid();
+    showToast('✅ Ajouté à tes favoris Vinted !');
+  }catch(e){showToast('Erreur : '+e.message.slice(0,80));}
+}
+
+async function delVintedItem(id){
+  if(!confirm('Retirer ce favori ?'))return;
+  try{
+    await supa('DELETE',`vinted_favoris?id=eq.${encodeURIComponent(id)}`);
+    vintedItems=vintedItems.filter(v=>v.id!==id);
+    renderVintedGrid();
+    showToast('Retiré');
+  }catch(e){showToast('Erreur : '+e.message.slice(0,60));}
+}
+
 /* ── Initialisation ── */
 loadFilms();
 loadWishlist();
+loadVintedItems();
 </script>
 </body>
 </html>
