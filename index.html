@@ -266,6 +266,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
 }
 
 /* ── PAGE CATÉGORIES ── */
+.real-tools{padding:0 20px 14px;display:flex;flex-direction:column;gap:10px;}
+.real-tools input{width:100%;box-sizing:border-box;background:var(--surface,#161616);border:0.5px solid var(--border);border-radius:12px;padding:12px 14px;color:#fff;font:300 14px 'Montserrat',sans-serif;outline:none;}
+.real-sort{display:flex;gap:8px;}
+.real-sub{font-size:11px;font-weight:300;color:rgba(255,255,255,.5);margin-top:2px;}
+@media(max-width:600px){.bottom-nav .nav-item{padding:8px 2px;min-width:0;}.bottom-nav .nav-item span{font-size:9.5px;letter-spacing:-.1px;}}
 .cat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 20px;}
 .cat-card{
   position:relative;border-radius:14px;overflow:hidden;
@@ -614,6 +619,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
   <div class="cat-grid" id="catGrid"></div>
 </div>
 
+<!-- ══ PAGE RÉALISATEURS ══ -->
+<div id="page-real" class="page">
+  <div class="page-header"><h1>Réalisateurs</h1></div>
+  <div class="real-tools">
+    <input type="text" id="realSearch" placeholder="Rechercher un réalisateur…" oninput="renderReal()">
+    <div class="real-sort">
+      <div class="filter-chip active" id="rs-az" onclick="setRealSort('az')">A–Z</div>
+      <div class="filter-chip" id="rs-n" onclick="setRealSort('n')">+ de films</div>
+    </div>
+  </div>
+  <div class="cat-grid" id="realGrid"></div>
+</div>
+
 <!-- ══ PAGE STATS ══ -->
 <div id="page-stats" class="page">
   <div class="page-header"><h1>Statistiques</h1></div>
@@ -654,6 +672,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Montse
   <div class="nav-item" data-page="cats" onclick="navigate('cats')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     <span>Catégories</span>
+  </div>
+  <div class="nav-item" data-page="real" onclick="navigate('real')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h12v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="m16 11 5-3v8l-5-3"/><path d="M8 8V5m4 3V5"/></svg>
+    <span>Réalisateurs</span>
   </div>
   <div class="nav-item" data-page="stats" onclick="navigate('stats')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -912,7 +934,7 @@ const IMG_LG   = 'https://image.tmdb.org/t/p/w342';
 
 /* ── State ── */
 let films=[], selected=null, jackets=[], activeJacket=null;
-let searchTimer=null, filterSupport='', filterGenre='';
+let searchTimer=null, filterSupport='', filterGenre='', filterReal='', realSort='az';
 let currentFilmId=null;
 let wishlist=[], wishSelected=null, wishSearchTimer=null, pendingWishId=null;
 
@@ -1002,10 +1024,11 @@ function navigate(page){
   if(page==='stats')   renderStats();
   if(page==='accueil') renderAccueil();
   if(page==='vinted')  renderVintedGrid();
+  if(page==='real')    renderReal();
 }
 
 /* ── RENDER ALL ── */
-function renderAll(){ renderAccueil(); renderFilms(); renderCats(); renderStats(); }
+function renderAll(){ renderAccueil(); renderFilms(); renderCats(); renderReal(); renderStats(); }
 
 /* ── ACCUEIL ── */
 function renderAccueil(){
@@ -1069,7 +1092,7 @@ function movieCardHTML(f, showNote=false){
 
 function filterBySupport(sup){
   filterSupport=sup;
-  filterGenre='';
+  filterGenre=''; filterReal='';
   navigate('films');
 }
 
@@ -1085,10 +1108,13 @@ function buildChips(){
   ];
   fr.innerHTML=chips.map(c=>{
     const isActive=(c.val===''&&!filterSupport&&!filterGenre)||(c.val===filterSupport&&c.val!=='')||(filterGenre&&c.val==='');
-    const active=c.val===filterSupport||(c.val===''&&!filterSupport&&!filterGenre);
+    const active=c.val===filterSupport||(c.val===''&&!filterSupport&&!filterGenre&&!filterReal);
     return `<div class="filter-chip${active?' active':''}" onclick="setFilter('${c.val}')">${c.label}</div>`;
   }).join('');
   // Ajouter chip genre si actif
+  if(filterReal){
+    fr.innerHTML+=`<div class="filter-chip active" onclick="clearReal()">✕ ${esc(filterReal)}</div>`;
+  }
   if(filterGenre){
     fr.innerHTML+=`<div class="filter-chip active" onclick="clearGenre()">✕ ${esc(filterGenre)}</div>`;
   }
@@ -1111,7 +1137,8 @@ function renderFilms(){
     const mq=!q||f.titre.toLowerCase().includes(q)||(f.real||'').toLowerCase().includes(q)||(f.genres||[]).some(g=>g.toLowerCase().includes(q));
     const ms=!filterSupport||f.support===filterSupport;
     const mg=!filterGenre||(f.genres||[]).includes(filterGenre);
-    return mq&&ms&&mg;
+    const mr=!filterReal||splitReal(f.real).includes(filterReal);
+    return mq&&ms&&mg&&mr;
   });
   list=[...list].sort((a,b)=>compareTitles(a.titre,b.titre));
 
@@ -1134,10 +1161,11 @@ function renderFilms(){
 
 function setFilter(val){
   filterSupport=val;
-  filterGenre='';
+  filterGenre=''; filterReal='';
   renderFilms();
 }
 
+function clearReal(){ filterReal=''; renderFilms(); }
 function clearGenre(){
   filterGenre='';
   renderFilms();
@@ -1193,10 +1221,57 @@ function renderCats() {
 }
 
 function filterByCat(genre){
-  filterSupport='';
+  filterSupport=''; filterReal='';
   filterGenre=genre;
   document.getElementById('filmSearch').value='';
   navigate('films');
+}
+
+/* ── RÉALISATEURS ── */
+function splitReal(r){
+  return String(r||'').split(/\s*(?:,|&|\/| et )\s*/i).map(x=>x.trim()).filter(Boolean);
+}
+function realLastName(n){ const p=n.split(/\s+/); return p[p.length-1]||n; }
+function setRealSort(m){
+  realSort=m;
+  document.getElementById('rs-az').classList.toggle('active',m==='az');
+  document.getElementById('rs-n').classList.toggle('active',m==='n');
+  renderReal();
+}
+function filterByReal(name){
+  filterSupport=''; filterGenre=''; filterReal=name;
+  document.getElementById('filmSearch').value='';
+  navigate('films');
+}
+function renderReal(){
+  const g=document.getElementById('realGrid'); if(!g) return;
+  const q=(document.getElementById('realSearch').value||'').trim().toLowerCase();
+  const map=new Map();
+  films.forEach(f=>splitReal(f.real).forEach(n=>{
+    if(!map.has(n)) map.set(n,[]);
+    map.get(n).push(f);
+  }));
+  let list=[...map.entries()].filter(([n])=>!q||n.toLowerCase().includes(q));
+  list.sort(realSort==='n'
+    ? (a,b)=>b[1].length-a[1].length||realLastName(a[0]).localeCompare(realLastName(b[0]),'fr')
+    : (a,b)=>realLastName(a[0]).localeCompare(realLastName(b[0]),'fr')||a[0].localeCompare(b[0],'fr'));
+  if(!list.length){
+    g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🎬</div><p>Aucun réalisateur</p></div>`;
+    return;
+  }
+  g.innerHTML=list.map(([name,fl])=>{
+    const wp=fl.filter(f=>f.poster);
+    const pick=wp.length?wp[Math.floor(Math.random()*wp.length)]:null;
+    const n=fl.length;
+    return `<div class="cat-card" data-n="${esc(name)}" onclick="filterByReal(this.dataset.n)">
+      ${pick?`<img class="cat-bg" src="${pick.poster}" alt="" loading="lazy">`:''}
+      <div class="cat-overlay"></div>
+      <div class="cat-info">
+        <div class="cat-name">${esc(name)}</div>
+        <div class="cat-count">${n} film${n>1?'s':''}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ── STATS ── */
